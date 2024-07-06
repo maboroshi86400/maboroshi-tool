@@ -1,0 +1,241 @@
+<html>
+  <body>
+  
+    <h1>インセインのチャットパレット生成ツール</h1>
+    <form>
+      <label for="url">キャラクターシート倉庫のURL<br>
+      <input id="url" type="url" size="80">
+      <input type="button" value="出力" onclick="output()"><br>
+  
+      チャットパレット出力：<br>
+      <textarea id="chatpalette" cols="100" rows="30" readonly=true></textarea>
+      <input type="button" value="クリップボードにコピー" onclick="copytoclipboard()"><br>      
+    </form>
+
+    <script>
+      //出力ボタンを押した時の処理
+      function output()
+      {
+        console.log('表示テスト')
+        console.log(url.value)
+
+        const geturl = url.value.replace("edit.html?", "display?ajax=1&");        
+        console.log(geturl)
+
+        fetchJSONP(geturl);
+      }
+      
+      //JSONP データを受け取った後の処理
+      function fetchJSONP(url) {
+        var script = document.createElement('script');
+        script.src = url + '&callback=handleJSONP';
+
+        document.body.appendChild(script);
+      }
+
+      function handleJSONP(response) {
+        console.log('Received JSONP data:', response);
+
+        const skill = [];
+        const field = [];
+        const number = [];
+        const fieldmath = [];
+        const curiosity = [];
+
+        const skilllist = [
+          ["焼却","拷問","緊縛","脅す","破壊","殴打","切断","刺す","射撃","戦争","埋葬"],
+          ["恋","悦び","憂い","恥じらい","笑い","我慢","驚き","怒り","恨み","哀しみ","愛"],
+          ["痛み","感応","手触り","におい","味","物音","情景","追跡","芸術","第六感","物陰"],
+          ["分解","電子機器","整理","薬品","効率","メディア","カメラ","乗物","機械","罠","兵器"],
+          ["物理学","数学","化学","生物学","医学","教養","人類学","歴史","民俗学","考古学","天文学"],
+          ["時間","混沌","深海","死","霊魂","魔術","暗黒","終末","夢","地底","宇宙"],
+        ];
+
+        // 計算用にギャップの位置を取得。
+        curiosity[0] = 0
+        curiosity[1] = curiosity[0] + curiositychk(response.skills.a)
+        curiosity[2] = curiosity[1] + curiositychk(response.skills.b)
+        curiosity[3] = curiosity[2] + curiositychk(response.skills.c)
+        curiosity[4] = curiosity[3] + curiositychk(response.skills.d)
+        curiosity[5] = curiosity[4] + curiositychk(response.skills.e)
+
+
+        // 取得している特技を配列に代入
+        for (let i = 1; i < response.learned.length; i++) {
+          var skillid = response.learned[i].id
+
+          console.log(skillid)
+          
+          // 特技の位置を取得
+          if (skillid.length == 17) {
+            field[i] = Number(skillid.substr(16,1))
+            number[i] = Number(skillid.substr(10,1))
+          } else {
+            field[i] = Number(skillid.substr(17,1))
+            number[i] = Number(skillid.substr(10,2)) 
+          }
+          
+          fieldmath[i] = field[i] + curiosity[field[i]]
+
+          //console.log(field[i])
+          //console.log(number[i])
+          //console.log(fieldmath[i])
+          
+          skill[i] = skilllist[field[i]][number[i]]
+
+          console.log(skill[i])
+        }
+
+        var chatpalettetext = [
+          '戦闘関係',
+          '2d6>=10 [回避/プロット6]',
+          '2d6>=9 [回避/プロット5]',
+          '2d6>=8 [回避/プロット4]',
+          '2d6>=7 [回避/プロット3]',
+          '2d6>=6 [回避/プロット2]',
+          '2d6>=5 [回避/プロット1]',
+          '1d6 [基本攻撃ダメージ]',
+          '',
+          '特技：最も目標値が低くなる場合',
+        ].join('\n');
+        
+        chatpalettetext = chatpalettetext + '\n'
+
+        // 特技の最小判定値計算
+        for (let targetfield = 0; targetfield < 6; targetfield++) {
+          for (let targetnumber = 0; targetnumber < 10; targetnumber++) {
+            var targetskill = skilllist[targetfield][targetnumber];
+            console.log(targetskill)
+            
+            var mins = targetmath(targetfield, targetnumber, skill, field, number, curiosity)
+            console.log(mins)
+
+            //取得している特技かどうかで生成する行を変える
+            if (targetskill == mins[1]) {
+              chatpalettetext = chatpalettetext + '2d6>=' + (mins[0] + 5) + ' [指定:' + targetskill + ']\n'
+            } else {
+              chatpalettetext = chatpalettetext + '2d6>=' + (mins[0] + 5) + ' [指定:' + targetskill + '][代用:' + mins[1] + ']\n'
+            }
+
+            //恐怖心だったらもう 1 行追加する。
+            var fieldchk = 'check' + targetfield
+            console.log(fieldchk)
+            var rowchk = 'row' + targetnumber
+            console.log(rowchk)
+            var fear = response.skills[rowchk][fieldchk]
+            console.log(fear)
+            
+            if (fear == true) {
+              
+              //取得している特技かどうかで生成する行を変える
+              if (targetskill == mins[1]) {
+                chatpalettetext = chatpalettetext + '2d6-1>=' + (mins[0] + 5) + ' [恐怖心][指定:' + targetskill + ']\n'
+              } else {
+                chatpalettetext = chatpalettetext + '2d6-1>=' + (mins[0] + 5) + ' [恐怖心][指定:' + targetskill + '][代用:' + mins[1] + ']\n'
+              }
+            }            
+
+          }
+        }
+
+        //アビリティの判定を追加する
+        chatpalettetext = chatpalettetext + '\n'
+        chatpalettetext = chatpalettetext + 'アビリティ:指定特技の判定\n'
+
+        for (let abnum = 0; abnum <= response.ability.length; abnum++) {
+          try {
+            var abskill = response.ability[abnum].targetSkill
+            
+            if (abskill !== null) {
+              for (let skl = 0; skl < skilllist.length; skl++) {
+                const innerlist = skilllist[skl]
+                var abskillidx = innerlist.indexOf(abskill);
+                if (abskillidx !== -1) {
+                  console.log(abskill)
+                  console.log(abskillidx)
+
+                  var mins = targetmath(skl, abskillidx, skill, field, number, curiosity)
+                  console.log(mins)
+
+                  //取得している特技かどうかで生成する行を変える
+                  if (abskill == mins[1]) {
+                    chatpalettetext = chatpalettetext + '2d6>=' + (mins[0] + 5) + ' [' + response.ability[abnum].name + '][指定特技:' + abskill + ']\n'
+                  } else {
+                    chatpalettetext = chatpalettetext + '2d6>=' + (mins[0] + 5) + ' [' + response.ability[abnum].name + '][指定:' + abskill + '][代用:' + mins[1] + ']\n'
+                  }
+
+                }
+              }
+            }
+          } catch(e) {
+            console.log(e)
+          }
+        
+        
+        }
+
+        chatpalettetext = chatpalettetext + [
+          '',
+          '能力値増減',
+          ':生命力-',
+          ':正気度-1 [ショック]',
+          ':生命力+1 [鎮痛剤][スペシャル]',
+          ':正気度+1 [鎮痛剤][スペシャル]',
+          ':鎮痛剤+1 [鎮痛剤獲得]',
+          ':鎮痛剤-1 [鎮痛剤使用]',
+          ':武器+1 [武器獲得]',
+          ':武器-1 [武器使用]',
+          ':お守り+1 [お守り獲得]',
+          ':お守り-1 [お守り使用]',
+        ].join('\n');
+
+        chatpalette.value = chatpalettetext
+
+      }
+
+      //好奇心分野かどうかで値をセット
+      function curiositychk(flag) {
+        if (flag == "1") {
+          return 0
+        } else {
+          return 1
+        }
+      }
+      
+      //目標値と代用する特技を確認
+      function targetmath(targetfield, targetnumber, skill, field, number, curiosity) {
+        var min = 100;
+        var minskill = '';
+      
+        //取得特技それぞれの距離を計算して、一番近いのを確認。
+        for (let i = 1; i < skill.length; i++) {
+          var fieldtemp = (targetfield + curiosity[targetfield]) - (field[i] + curiosity[field[i]]);
+          var numbertemp = (targetnumber - number[i]);
+          var mathtemp = Math.abs(fieldtemp) + Math.abs(numbertemp);
+              
+          if (min > mathtemp) {
+            min = mathtemp
+            minskill = skill[i]
+          } else if (min == mathtemp) {
+            minskill = minskill + ',' + skill[i]
+          }
+        }
+
+        const mins = [min, minskill]
+        return mins
+      }
+      
+      //チャットパレットをクリップボードにコピー
+      function copytoclipboard() {
+        const textarea = document.getElementById('chatpalette')
+      
+        textarea.select()
+        document.execCommand('copy')
+        
+        textarea.setSelectionRange(0, 0)
+      
+      }
+      
+    </script>
+  </body>
+</html>
