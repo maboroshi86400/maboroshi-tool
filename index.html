@@ -8,7 +8,7 @@
       <input type="button" value="出力" onclick="output()"><br>
   
       チャットパレット出力：<br>
-      <textarea id="chatpalette" cols="100" rows="30" readonly=true></textarea><br>
+      <textarea id="chatpalette" cols="100" rows="30" readonly=true></textarea>
       <input type="button" value="クリップボードにコピー" onclick="copytoclipboard()"><br>      
     </form>
 
@@ -96,14 +96,26 @@
           '2d6>=5 [回避/プロット1]',
           '1d6 [基本攻撃ダメージ]',
           '',
-          '特技：最も目標値が低くなる場合',
+          '特技：所持している特技',
         ].join('\n');
         
         chatpalettetext = chatpalettetext + '\n'
 
+        // 所持特技のチャパレ生成
+        for (let i = 1; i < skill.length; i++) {
+
+          chatpalettetext = chatpalettetext + '2d6>=5 [指定:' + skill[i] + ']\n'
+
+        }
+
+        chatpalettetext = chatpalettetext + '\n'
+        chatpalettetext = chatpalettetext + '特技：最も目標値が低くなる場合\n'
+
+
+
         // 特技の最小判定値計算
         for (let targetfield = 0; targetfield < 6; targetfield++) {
-          for (let targetnumber = 0; targetnumber < 11; targetnumber++) {
+          for (let targetnumber = 0; targetnumber < 10; targetnumber++) {
             var targetskill = skilllist[targetfield][targetnumber];
             console.log(targetskill)
             
@@ -129,9 +141,9 @@
               
               //取得している特技かどうかで生成する行を変える
               if (targetskill == mins[1]) {
-                chatpalettetext = chatpalettetext + '2d6-2>=' + (mins[0] + 5) + ' [恐怖心][指定:' + targetskill + ']\n'
+                chatpalettetext = chatpalettetext + '2d6-1>=' + (mins[0] + 5) + ' [恐怖心][指定:' + targetskill + ']\n'
               } else {
-                chatpalettetext = chatpalettetext + '2d6-2>=' + (mins[0] + 5) + ' [恐怖心][指定:' + targetskill + '][代用:' + mins[1] + ']\n'
+                chatpalettetext = chatpalettetext + '2d6-1>=' + (mins[0] + 5) + ' [恐怖心][指定:' + targetskill + '][代用:' + mins[1] + ']\n'
               }
             }            
 
