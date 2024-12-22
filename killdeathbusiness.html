@@ -1,0 +1,367 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>キルデスビジネスのチャットパレット生成ツール</title>
+  </head>
+  <body>
+  
+    <h1>キルデスビジネスのチャットパレット生成ツール</h1>
+    <form>
+      <label for="url">生成するPCのキャラクターシート倉庫のURL<br>
+      <input id="urls" type="url" size="80">
+      <input type="button" value="出力" onclick="output()"><br>
+
+      <label for="url">対戦相手1：キャラクターシート倉庫のURL<br>
+      <input id="urls" type="url" size="80"><br>
+
+      <label for="url">対戦相手2：キャラクターシート倉庫のURL<br>
+      <input id="urls" type="url" size="80"><br>
+
+      <label for="url">対戦相手3：キャラクターシート倉庫のURL<br>
+      <input id="urls" type="url" size="80"><br>
+
+      <label for="url">対戦相手4：キャラクターシート倉庫のURL<br>
+      <input id="urls" type="url" size="80"><br>
+
+      <label for="url">対戦相手5：キャラクターシート倉庫のURL<br>
+      <input id="urls" type="url" size="80"><br>
+  
+      チャットパレット出力：<br>
+      <textarea id="chatpalette" cols="100" rows="30" readonly=true></textarea>
+      <input type="button" value="クリップボードにコピー" onclick="copytoclipboard()"><br>      
+    </form>
+
+    <script>
+      //変数設定
+      let results = [];
+      let responseCounter = 0; // レスポンスのカウント
+      
+      //出力ボタンを押した時の処理
+      function output()
+      {
+        console.log('表示テスト')
+
+        geturls = [];
+
+        for (let i = 0; i < urls.length; i++) {
+          console.log(urls[i].value);
+          geturls[i] = urls[i].value.replace("edit.html?", "display?ajax=1&");        
+          console.log(geturls[i]);
+        }
+
+        loadJsonp(0);
+      }
+      
+      // コールバック関数を作成する
+      function createCallback(index) {
+        return function(data) {
+          console.log(`Data received from URL ${index + 1}:`, data);
+          results.push(data);
+
+          console.log(geturls[index + 1])
+
+          // 次のURLに対してJSONPを呼び出す
+          if (index + 1 < urls.length && geturls[index + 1]) {
+            loadJsonp(index + 1);
+          } else {
+            // すべてのデータを受け取ったら結果を表示
+            document.getElementById('chatpalette').textContent = JSON.stringify(results, null, 2);
+            const jsondata = JSON.parse(document.getElementById('chatpalette').textContent);
+            if (index > 0) {
+              createchatpalette(jsondata);
+            }
+          }
+        };
+      }
+
+      // JSONPリクエストを送信する関数
+      function loadJsonp(index) {
+        const url = geturls[index];
+        const callbackName = `handleResponse${index}`;
+
+        // グローバルオブジェクトにコールバック関数を設定
+        window[callbackName] = createCallback(index);
+
+        // 既存の <script> タグを利用してJSONPリクエストを送信
+        const script = document.createElement('script');
+        script.src = `${url}&callback=${callbackName}`;
+        script.onerror = function() {
+          console.error(`Error loading JSONP from ${url}`);
+        };
+
+        // スクリプトをページに追加
+        document.head.appendChild(script);
+      }
+
+
+      function createchatpalette(response) {
+        console.log('Received JSONP data:', response);
+
+        //計算用の変数を設定
+        skill = [];
+        field = [];
+        number = [];
+        fieldmath = [];
+        curiosity = [];
+
+        //チャパレ生成対象者用に変数を設定
+        skill[0] = [];
+        field[0] = [];
+        number[0] = [];
+        fieldmath[0] = [];
+        curiosity[0] = [];
+
+        //計算対象者用に変数を設定
+        skill[1] = [];
+        field[1] = [];
+        number[1] = [];
+        fieldmath[1] = [];
+        curiosity[1] = [];
+
+        skilllist = [
+          ["無職","芸術家","研究者","家事手伝い","学生","悪漢","労働者","探偵","大物","医師","公務員"],
+          ["叫ぶ","閃く","斬る","振る","投げる","殴る","蹴る","跳ぶ","撃つ","掴む","待つ"],
+          ["ピアス","髪飾り","銃","ネックレス","ベルト","眼鏡","帽子","時計","剣","リング","タトゥー"],
+          ["ネイキッド","アウトドア","エスニック","ヒップホップ","ミリタリー","フォーマル","トラッド","ゴシック","パンク","メタル","アイドル"],
+          ["愛","喜び","期待","焦り","自負","怒り","悲しみ","嫉妬","恐怖","恥","嫌悪"],
+          ["死","復讐","勝利","支配","獲得","繁栄","強化","安全","健康","長寿","生"],
+        ];
+
+        //チャパレ生成対象者の特技とギャップの位置を取得
+        skillchk(response[0],0)
+
+        //他のキャラクターが絡まないチャパレ
+        var chatpalettetext = [
+          '※※重要※※　【ブロック】は手動で計算してください。',
+          '汎用',
+          'ST 【シーン表】',
+          'EST 【サービスシーン表】',
+          'SOUL 【ソウル放出表】',
+          'NAME 【万能命名表】',
+          '',
+        ].join('\n');
+
+        switch (response[0].base.attribute) {
+        
+          case "オカルト":
+            chatpalettetext = chatpalettetext + 'OSPT 【サブプロット表：オカルト】\n';
+            break;
+          case "家族":
+            chatpalettetext = chatpalettetext + 'FSPT 【サブプロット表：家族】\n';
+            break;
+          case "恋愛":
+            chatpalettetext = chatpalettetext + 'LOSPT 【サブプロット表：恋愛】\n';
+            break;
+          case "正義":
+            chatpalettetext = chatpalettetext + 'JSPT 【サブプロット表：正義】\n';
+            break;
+          case "修行":
+            chatpalettetext = chatpalettetext + 'TSPT 【サブプロット表：修行】\n';
+            break;
+          case "笑い":
+            chatpalettetext = chatpalettetext + 'BSPT 【サブプロット表：笑い】\n';
+            break;
+          case "意地悪":
+            chatpalettetext = chatpalettetext + 'MASPT 【サブプロット表：意地悪】\n';
+            break;
+          case "恨み":
+            chatpalettetext = chatpalettetext + 'UMSPT 【サブプロット表：恨み】\n';
+            break;
+          case "人気":
+            chatpalettetext = chatpalettetext + 'POSPT 【サブプロット表：人気】\n';
+            break;
+          case "仕切り":
+            chatpalettetext = chatpalettetext + 'PASPT 【サブプロット表：仕切り】\n';
+            break;        
+          case "金儲け":
+            chatpalettetext = chatpalettetext + 'MOSPT 【サブプロット表：金儲け】\n';
+            break;
+          case "対悪魔":
+            chatpalettetext = chatpalettetext + 'ANSPT 【サブプロット表：対悪魔】\n';
+            break;
+          defaault:
+            chatpalettetext = chatpalettetext
+        }
+
+        chatpalettetext = chatpalettetext + '\n';
+        chatpalettetext = chatpalettetext + '戦闘：先行攻撃時\n';
+
+        //先行の攻撃時のチャパレ
+        chatpalettetext = chatpalettetext + 'jd5+{チャージ}#1 [リスク:1]【' + response[0].ability[6].name + '】[指定特技:' + response[0].ability[6].targetSkill + ']\n';
+        chatpalettetext = chatpalettetext + 'jd5+{チャージ}#2 [リスク:2]【' + response[0].ability[5].name + '】[指定特技:' + response[0].ability[5].targetSkill + ']\n';
+        chatpalettetext = chatpalettetext + '\n';
+
+        //持っている特技で判定する時のチャパレ
+        chatpalettetext = chatpalettetext + '特技：所持している特技\n';
+
+        for (let i = 1; i < skill[0].length; i++) {
+
+          chatpalettetext = chatpalettetext + 'jd5#2 [指定:' + skill[0][i] + ']\n';
+
+        }
+
+        console.log(chatpalettetext)
+
+        //計算の対象者１人ごとにチャパレを生成していく
+        for (let opp = 1; opp < response.length; opp++) {
+
+          chatpalettetext = chatpalettetext + '\n'
+          chatpalettetext = chatpalettetext + '対象:' + response[opp].base.name +'\n'
+
+          //目標値を計算する対象者の特技とギャップの位置を取得
+          skillchk(response[opp],1)
+
+          //対象の特技に対する最も低い目標値を計算
+          for (let ensk = 1; ensk < skill[1].length; ensk++) {
+            try {
+              console.log(skill[1][ensk])
+            
+              if (skill[1][ensk] !== null) {
+
+                var mins = targetmath(field[1][ensk], number[1][ensk])
+                console.log(mins)
+
+                //取得している特技かどうかで生成する行を変える
+                if (skill[1][ensk] == mins[1]) {
+                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#2 [指定特技:' + skill[1][ensk] + ']\n'
+                } else {
+                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#2 [指定:' + skill[1][ensk] + '][代用:' + mins[1] + ']\n'
+                }
+
+              }
+            } catch(e) {
+              console.log(e)
+            }
+          }
+
+          //対象のアビリティに対する最も低い目標値を計算
+          for (let enab = 1; enab < response[opp].ability.length; enab++) {
+            try {
+              tag = 7 - enab
+              console.log(response[opp].ability[tag].name)
+              console.log(response[opp].ability[tag].targetSkill)
+            
+              for (let chk = 1; chk < skill[1].length; chk++) {
+                if (skill[1][chk] == response[opp].ability[tag].targetSkill) {
+                  mathNum = chk
+                }
+              }
+            
+              if (response[opp].ability[tag].name !== null) {
+
+                var mins = targetmath(field[1][mathNum], number[1][mathNum])
+                console.log(mins)
+
+                //反撃に使うアビリティによるチャパレ。enab が 6 の場合だけ 1 行追加
+                if (enab < 6) {
+                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#' + (enab + 1) + ' [リスク:' + (enab + 1) + '][反撃:' + response[opp].ability[tag].name + ']【' + response[0].ability[(6 - enab)].name + '】\n';
+                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#' + (enab + 2) + ' [リスク:' + (enab + 2) + '][反撃:' + response[opp].ability[tag].name + ']【' + response[0].ability[(5 - enab)].name + '】\n';
+                } else {
+                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#' + (enab + 1) + ' [リスク:' + (enab + 1) + '][反撃:' + response[opp].ability[tag].name + ']【' + response[0].ability[(6 - enab)].name + '】\n';
+                }
+
+              }
+            } catch(e) {
+              console.log(e)
+            }
+          }
+            console.log(chatpalettetext)
+        }
+
+        chatpalette.value = chatpalettetext
+
+      }
+
+      //対象者の特技とギャップを取得
+      function skillchk(jdata, disc) {
+
+        console.log(jdata)
+        console.log(disc)
+
+        // 計算用にギャップの位置を取得。
+        curiosity[disc][0] = 0
+        curiosity[disc][1] = curiosity[disc][0] + curiositychk(jdata.skills.a)
+        curiosity[disc][2] = curiosity[disc][1] + curiositychk(jdata.skills.b)
+        curiosity[disc][3] = curiosity[disc][2] + curiositychk(jdata.skills.c)
+        curiosity[disc][4] = curiosity[disc][3] + curiositychk(jdata.skills.d)
+        curiosity[disc][5] = curiosity[disc][4] + curiositychk(jdata.skills.e)
+
+
+        // 取得している特技を配列に代入
+        for (let i = 1; i < jdata.learned.length; i++) {
+          var skillid = jdata.learned[i].id
+
+          console.log(skillid)
+          
+          // 特技の位置を取得
+          if (skillid.length == 17) {
+            field[disc][i] = Number(skillid.substr(16,1))
+            number[disc][i] = Number(skillid.substr(10,1))
+          } else {
+            field[disc][i] = Number(skillid.substr(17,1))
+            number[disc][i] = Number(skillid.substr(10,2)) 
+          }
+          
+          fieldmath[disc][i] = field[disc][i] + curiosity[disc][field[disc][i]]
+
+          console.log(field[disc][i])
+          console.log(number[disc][i])
+          console.log(fieldmath[disc][i])
+          
+          skill[disc][i] = skilllist[field[disc][i]][number[disc][i]]
+
+          console.log(skill[disc][i])
+        }
+      }
+
+      //ギャップが埋まっているかどうかで値をセット
+      function curiositychk(flag) {
+        if (flag == "1") {
+          return 0
+        } else {
+          return 1
+        }
+      }
+      
+      //目標値と代用する特技を確認
+      function targetmath(targetfield, targetnumber) {
+        var min = 100;
+        var minskill = '';
+      
+        //取得特技それぞれの距離を計算して、一番近いのを確認。
+        for (let i = 1; i < skill[0].length; i++) {
+
+          var fieldtemp = (targetfield + curiosity[0][targetfield]) - (field[0][i] + curiosity[0][field[0][i]]);
+          var numbertemp = (targetnumber - number[0][i]);
+          var mathtemp = Math.abs(fieldtemp) + Math.abs(numbertemp);
+          
+          if (min > mathtemp) {
+            min = mathtemp
+            minskill = skill[0][i]
+          } else if (min == mathtemp) {
+            minskill = minskill + ',' + skill[0][i]
+          }
+        }
+
+        const mins = [min, minskill]
+        return mins
+      }
+
+
+
+
+      //チャットパレットをクリップボードにコピー
+      function copytoclipboard() {
+        const textarea = document.getElementById('chatpalette')
+      
+        textarea.select()
+        document.execCommand('copy')
+        
+        textarea.setSelectionRange(0, 0)
+      
+      }
+      
+    </script>
+  </body>
+</html>
