@@ -128,6 +128,8 @@
           ["死","復讐","勝利","支配","獲得","繁栄","強化","安全","健康","長寿","生"],
         ];
 
+        classlist = ["職業","動作","小道具","ファッション","情動","願望"];
+        
         //チャパレ生成対象者の特技とギャップの位置を取得
         skillchk(response[0],0)
 
@@ -223,11 +225,7 @@
                 console.log(mins)
 
                 //取得している特技かどうかで生成する行を変える
-                if (skill[1][ensk] == mins[1]) {
-                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#2 [指定特技:' + skill[1][ensk] + ']\n'
-                } else {
-                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#2 [指定:' + skill[1][ensk] + '][代用:' + mins[1] + ']\n'
-                }
+                chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#2 [指定:' + skill[1][ensk] + '][対：' + response[opp].base.name + '][' + classlist[ensk] +']\n'
 
               }
             } catch(e) {
@@ -255,10 +253,10 @@
 
                 //反撃に使うアビリティによるチャパレ。enab が 6 の場合だけ 1 行追加
                 if (enab < 6) {
-                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#' + (enab + 1) + ' [リスク:' + (enab + 1) + '][反撃:' + response[opp].ability[tag].name + ']【' + response[0].ability[(6 - enab)].name + '】\n';
-                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#' + (enab + 2) + ' [リスク:' + (enab + 2) + '][反撃:' + response[opp].ability[tag].name + ']【' + response[0].ability[(5 - enab)].name + '】\n';
+                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '+{チャージ}#' + (enab + 1) + ' [リスク:' + (enab + 1) + '][対:' + response[opp].base.name + '-リスク' + enab +']【' + response[0].ability[(6 - enab)].name + '】[指定特技:' + response[0].ability[(6 - enab)].targetSkill + ']\n';
+                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '+{チャージ}#' + (enab + 1) + ' [リスク:' + (enab + 2) + '][対:' + response[opp].base.name + '-リスク' + enab +']【' + response[0].ability[(5 - enab)].name + '】[指定特技:' + response[0].ability[(5 - enab)].targetSkill + ']\n';
                 } else {
-                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#' + (enab + 1) + ' [リスク:' + (enab + 1) + '][反撃:' + response[opp].ability[tag].name + ']【' + response[0].ability[(6 - enab)].name + '】\n';
+                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '+{チャージ}#' + (enab + 1) + ' [リスク:' + (enab + 1) + '][対:' + response[opp].base.name + '-リスク' + enab +']【' + response[0].ability[(6 - enab)].name + '】[指定特技:' + response[0].ability[(6 - enab)].targetSkill + ']\n';
                 }
 
               }
