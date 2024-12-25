@@ -225,7 +225,7 @@
                 console.log(mins)
 
                 //取得している特技かどうかで生成する行を変える
-                chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#2 [判定:' + skill[1][ensk] + '][対：' + response[opp].base.name + '][' + classlist[ensk] +']\n'
+                chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '#2 [判定:' + skill[1][ensk] + '][対：' + response[opp].base.name + '][' + classlist[Field[1][ensk]] +']\n'
 
               }
             } catch(e) {
@@ -265,35 +265,35 @@
             }
           }
 
-          chatpalettetext = chatpalettetext + '\n';
-          chatpalettetext = chatpalettetext + 'ソウル管理：ソウル増減関係\n';
-          chatpalettetext = chatpalettetext + ':ソウル+50 【CM等】\n';
-          chatpalettetext = chatpalettetext + ':ソウル+100 【交流成功】【サービス成功】【テコ入れ脱出】\n';
-          chatpalettetext = chatpalettetext + ':ソウル+200 【フィーバー】【サービス成功・テコ入れ脱出】\n';
-          chatpalettetext = chatpalettetext + ':ソウル+300 【標的・護衛天使撃破】\n';
-          chatpalettetext = chatpalettetext + ':ソウル+ \n';
-          chatpalettetext = chatpalettetext + ':ソウル-200 【テコ入れ発生】\n';
-          chatpalettetext = chatpalettetext + ':ソウル-100 【ソウル放出100】\n';
-          chatpalettetext = chatpalettetext + ':ソウル-200 【ソウル放出200】\n';
-          chatpalettetext = chatpalettetext + ':ソウル-300 【ソウル放出300】\n';
-          chatpalettetext = chatpalettetext + ':ソウル-50 【死亡1回目】\n';
-          chatpalettetext = chatpalettetext + ':ソウル-100 【死亡2回目】\n';
-          chatpalettetext = chatpalettetext + ':ソウル-200 【死亡3回目】\n';
-          chatpalettetext = chatpalettetext + ':ソウル-400 【死亡4回目】\n';
-          chatpalettetext = chatpalettetext + ':ソウル-800 【死亡5回目】\n';
-          chatpalettetext = chatpalettetext + ':ソウル-1600 【死亡6回目】\n';
-          chatpalettetext = chatpalettetext + ':ソウル- \n';
-          chatpalettetext = chatpalettetext + ':ヘルスラッグ+50 【死亡1回目】\n';
-          chatpalettetext = chatpalettetext + ':ヘルスラッグ+100 【死亡2回目】\n';
-          chatpalettetext = chatpalettetext + ':ヘルスラッグ+200 【死亡3回目】\n';
-          chatpalettetext = chatpalettetext + ':ヘルスラッグ+400 【死亡4回目】\n';
-          chatpalettetext = chatpalettetext + ':ヘルスラッグ+800 【死亡5回目】\n';
-          chatpalettetext = chatpalettetext + ':ヘルスラッグ+1600 【死亡6回目】\n';
-          chatpalettetext = chatpalettetext + ':ヘルスラッグ+ \n';
-          chatpalettetext = chatpalettetext + ':ヘルスラッグ- \n';
           
           console.log(chatpalettetext)
         }
+        chatpalettetext = chatpalettetext + '\n';
+        chatpalettetext = chatpalettetext + 'ソウル管理：ソウル増減関係\n';
+        chatpalettetext = chatpalettetext + ':ソウル+50 【CM等】\n';
+        chatpalettetext = chatpalettetext + ':ソウル+100 【交流成功】【サービス成功】【テコ入れ脱出】\n';
+        chatpalettetext = chatpalettetext + ':ソウル+200 【フィーバー】【サービス成功・テコ入れ脱出】\n';
+        chatpalettetext = chatpalettetext + ':ソウル+300 【標的・護衛天使撃破】\n';
+        chatpalettetext = chatpalettetext + ':ソウル+ \n';
+        chatpalettetext = chatpalettetext + ':ソウル-200 【テコ入れ発生】\n';
+        chatpalettetext = chatpalettetext + ':ソウル-100 【ソウル放出100】\n';
+        chatpalettetext = chatpalettetext + ':ソウル-200 【ソウル放出200】\n';
+        chatpalettetext = chatpalettetext + ':ソウル-300 【ソウル放出300】\n';
+        chatpalettetext = chatpalettetext + ':ソウル-50 【死亡1回目】\n';
+        chatpalettetext = chatpalettetext + ':ソウル-100 【死亡2回目】\n';
+        chatpalettetext = chatpalettetext + ':ソウル-200 【死亡3回目】\n';
+        chatpalettetext = chatpalettetext + ':ソウル-400 【死亡4回目】\n';
+        chatpalettetext = chatpalettetext + ':ソウル-800 【死亡5回目】\n';
+        chatpalettetext = chatpalettetext + ':ソウル-1600 【死亡6回目】\n';
+        chatpalettetext = chatpalettetext + ':ソウル- \n';
+        chatpalettetext = chatpalettetext + ':ヘルスラッグ+50 【死亡1回目】\n';
+        chatpalettetext = chatpalettetext + ':ヘルスラッグ+100 【死亡2回目】\n';
+        chatpalettetext = chatpalettetext + ':ヘルスラッグ+200 【死亡3回目】\n';
+        chatpalettetext = chatpalettetext + ':ヘルスラッグ+400 【死亡4回目】\n';
+        chatpalettetext = chatpalettetext + ':ヘルスラッグ+800 【死亡5回目】\n';
+        chatpalettetext = chatpalettetext + ':ヘルスラッグ+1600 【死亡6回目】\n';
+        chatpalettetext = chatpalettetext + ':ヘルスラッグ+ \n';
+        chatpalettetext = chatpalettetext + ':ヘルスラッグ- \n';
 
         chatpalette.value = chatpalettetext
 
