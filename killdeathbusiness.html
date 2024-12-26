@@ -254,7 +254,7 @@
                 //反撃に使うアビリティによるチャパレ。enab が 6 の場合だけ 1 行追加
                 if (enab < 6) {
                   chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '+{チャージ}#' + (enab + 1) + ' [リスク:' + (enab + 1) + '][対:' + response[opp].base.name + '-リスク' + enab +']【' + response[0].ability[(6 - enab)].name + '】[指定特技:' + response[0].ability[(6 - enab)].targetSkill + ']\n';
-                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '+{チャージ}#' + (enab + 1) + ' [リスク:' + (enab + 2) + '][対:' + response[opp].base.name + '-リスク' + enab +']【' + response[0].ability[(5 - enab)].name + '】[指定特技:' + response[0].ability[(5 - enab)].targetSkill + ']\n';
+                  chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '+{チャージ}#' + (enab + 2) + ' [リスク:' + (enab + 2) + '][対:' + response[opp].base.name + '-リスク' + enab +']【' + response[0].ability[(5 - enab)].name + '】[指定特技:' + response[0].ability[(5 - enab)].targetSkill + ']\n';
                 } else {
                   chatpalettetext = chatpalettetext + 'jd' + (mins[0] + 5) + '+{チャージ}#' + (enab + 1) + ' [リスク:' + (enab + 1) + '][対:' + response[opp].base.name + '-リスク' + enab +']【' + response[0].ability[(6 - enab)].name + '】[指定特技:' + response[0].ability[(6 - enab)].targetSkill + ']\n';
                 }
