@@ -57,12 +57,11 @@
 
         // 計算用にギャップの位置を取得。
         curiosity[0] = 0
-        curiosity[1] = curiosity[0] + curiositychk("a" in response.skills)
-        curiosity[2] = curiosity[1] + curiositychk("b" in response.skills)
-        curiosity[3] = curiosity[2] + curiositychk("c" in response.skills)
-        curiosity[4] = curiosity[3] + curiositychk("d" in response.skills)
-        curiosity[5] = curiosity[4] + curiositychk("e" in response.skills)
-
+        curiosity[1] = curiosity[0] + curiositychk(response.skills.a)
+        curiosity[2] = curiosity[1] + curiositychk(response.skills.b)
+        curiosity[3] = curiosity[2] + curiositychk(response.skills.c)
+        curiosity[4] = curiosity[3] + curiositychk(response.skills.d)
+        curiosity[5] = curiosity[4] + curiositychk(response.skills.e)
 
         // 取得している特技を配列に代入
         for (let i = 1; i < response.learned.length; i++) {
@@ -210,8 +209,12 @@
       }
 
       //好奇心分野かどうかで値をセット
-      function curiositychk(exists) {
-        return exists ? 0 : 1;
+      function curiositychk(flag) {
+        if (flag == "1") {
+          return 0
+        } else {
+          return 1
+        }
       }
       
       //目標値と代用する特技を確認
