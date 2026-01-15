@@ -63,6 +63,13 @@
         curiosity[4] = curiosity[3] + curiositychk(response.skills.d)
         curiosity[5] = curiosity[4] + curiositychk(response.skills.e)
 
+        console.log(curiosity[0])
+        console.log(curiosity[1])
+        console.log(curiosity[2])
+        console.log(curiosity[3])
+        console.log(curiosity[4])
+        console.log(curiosity[5])
+
         // 取得している特技を配列に代入
         for (let i = 1; i < response.learned.length; i++) {
           var skillid = response.learned[i].id
