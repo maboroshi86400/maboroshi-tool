@@ -216,12 +216,8 @@
       }
 
       //好奇心分野かどうかで値をセット
-      function curiositychk(flag) {
-        if (flag == "1") {
-          return 0
-        } else {
-          return 1
-        }
+      function curiositychk(value) {
+        return value === undefined || value === "1" ? 1 : 0;
       }
       
       //目標値と代用する特技を確認
